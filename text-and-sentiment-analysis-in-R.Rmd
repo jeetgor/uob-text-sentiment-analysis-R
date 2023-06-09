@@ -342,6 +342,105 @@ ggraph(bigram_graph, layout = "fr") +
 ```
 
 ```{r}
+grimm_tales <- gutenberg_download(2591) %>% 
+              mutate(linenumber=row_number())
+```
+
+```{r}
+grimm_tales_trigrams <- grimm_tales %>% 
+  unnest_tokens(trigram, text, token = "ngrams", n = 3)
+grimm_tales_trigrams
+```
+
+```{r}
+grimm_tales_trigrams <- grimm_tales_trigrams %>%
+      separate(trigram, c("word1", "word2", "word3"), sep = " ") 
+grimm_tales_trigrams
+```
+
+```{r}
+grimm_tales_trigrams <- grimm_tales_trigrams %>%
+                      filter(!is.na(word1)) %>% 
+                      filter(!is.na(word2)) %>%
+   filter(!is.na(word3))
+grimm_tales_trigrams
+```
+
+```{r}
+grimm_tales_bigrams <- grimm_tales_trigrams %>%
+                      unite(trigram, word1, word2, word3, sep=" ")
+grimm_tales_trigrams
+```
+
+```{r}
+grimm_tales_trigrams <- grimm_tales %>% 
+                      unnest_tokens(trigram, text, token = "ngrams", n = 3) %>%
+                      separate(trigram, c("word1", "word2", "word3"), sep = " ") %>%
+                      filter(!is.na(word1)) %>% 
+                      filter(!is.na(word2)) %>%
+                      filter(!is.na(word3)) %>%
+                      unite(trigram, word1, word2, word3, sep=" ")
+
+grimm_tales_trigrams
+```
+
+```{r}
+trigram_counts <- grimm_tales_trigrams %>% count(trigram, sort=TRUE)
+trigram_counts
+```
+
+```{r}
+trigram_counts <- grimm_tales %>% 
+                      unnest_tokens(trigram, text, token = "ngrams", n = 3) %>%
+                      separate(trigram, c("word1", "word2", "word3"), sep = " ") %>%
+                      filter(!is.na(word1)) %>% 
+                      filter(!is.na(word2)) %>% 
+  filter(!is.na(word3)) %>% 
+                      count(word1, word2, word3, sort=TRUE)
+
+trigram_counts
+```
+
+```{r}
+library(igraph)
+
+trigram_graph <- trigram_counts %>%
+                  filter(n >= 7) %>%
+                  graph_from_data_frame()
+trigram_graph
+```
+
+```{r}
+library(ggraph)
+
+ggraph(trigram_graph, layout = "fr") +
+  geom_edge_link() +
+  geom_node_point() +
+  geom_node_text(aes(label = name), vjust = 1, hjust = 1)
+```
+
+```{r}
+ggraph(trigram_graph, layout = "fr") +
+     geom_edge_link(aes(edge_alpha = n), show.legend = FALSE,
+                    arrow = grid::arrow(type = "closed", length = unit(2, "mm")), 
+                    end_cap = circle(1, "mm")) +
+     geom_node_point(color = "lightblue", size = 2) +
+     geom_node_text(aes(label = name), size = 2) +
+     theme_void()
+```
+
+```{r}
+trigram_graph <- trigram_counts %>%
+    filter(n >= 3) %>%
+    graph_from_data_frame()
+
+ggraph(trigram_graph, layout = "fr") +
+     geom_edge_link(aes(edge_alpha = n), show.legend = FALSE,
+                    arrow = grid::arrow(type = "closed", length = unit(1, "mm")), 
+                    end_cap = circle(0.5, "mm")) +
+     geom_node_point(color = "lightblue", size = 0.5) +
+     geom_node_text(aes(label = name), size = 1) +
+     theme_void()
 
 ```
 
