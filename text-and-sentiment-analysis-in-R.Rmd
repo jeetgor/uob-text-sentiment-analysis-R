@@ -135,4 +135,81 @@ grimm_tales_sentiments %>%
   count(sentiment) %>%
   mutate(sentiment = reorder(sentiment, n)) %>%
   ggplot(aes(n, sentiment)) + geom_col() + labs(y=NULL)
-````
+```
+
+```{r}
+grimm_tales <- gutenberg_download(2591) %>% 
+              mutate(linenumber=row_number()) %>% 
+              unnest_tokens(word, text) %>% anti_join(stop_words)
+grimm_tales
+```
+
+```{r}
+grimm_tales_sentiments <- grimm_tales %>% 
+                         inner_join(sentiments)
+grimm_tales_sentiments
+```
+
+```{r}
+grimm_tales_blocks <- grimm_tales_sentiments %>% 
+                     count(block=linenumber%/%80, sentiment)
+grimm_tales_blocks
+```
+
+```{r}
+grimm_tales_blocks <- grimm_tales_blocks %>% 
+                     pivot_wider(names_from = sentiment, 
+                                 values_from = n, 
+                                 values_fill = 0)
+grimm_tales_blocks
+```
+
+```{r}
+grimm_tales_blocks <- grimm_tales_blocks %>%
+                         mutate(sentiment = positive - negative)
+grimm_tales_blocks
+```
+
+```{r}
+grimm_tales_blocks %>% ggplot(aes(block, sentiment)) + geom_col()
+```
+
+```{r}
+grimm_tales_blocks %>% ggplot(aes(block, joy)) + geom_col()
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
