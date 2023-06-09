@@ -91,3 +91,48 @@ counts <- counts %>% mutate(word = reorder(word, n))
 ```{r}
 counts %>% ggplot(aes(n, word)) + geom_col() + labs(y=NULL)
 ```
+
+```{r}
+sentiments <- get_sentiments("nrc")
+sentiments
+```
+
+```{r}
+sentiments %>% count(sentiment)
+```
+
+```{r}
+grimm_tales <- gutenberg_download(2591) %>%
+              unnest_tokens(word, text) %>%
+              anti_join(stop_words)
+grimm_tales
+```
+
+```{r}
+grimm_tales_sentiments <- grimm_tales %>% inner_join(sentiments)
+grimm_tales_sentiments
+```
+
+```{r}
+grimm_tales_sentiments %>% 
+  filter(sentiment=="positive") %>%
+  count(word, sort=TRUE)
+```
+
+```{r}
+grimm_tales_sentiments %>%
+  filter(sentiment=="joy") %>%
+  count(word) %>% 
+  summarise(total=sum(n))
+```
+
+```{r}
+grimm_tales_sentiments %>% count(sentiment)
+```
+
+```{r}
+grimm_tales_sentiments %>%
+  count(sentiment) %>%
+  mutate(sentiment = reorder(sentiment, n)) %>%
+  ggplot(aes(n, sentiment)) + geom_col() + labs(y=NULL)
+````
