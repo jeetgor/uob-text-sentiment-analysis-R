@@ -57,3 +57,37 @@ hamlet %>% unnest_tokens(word, text) %>%
   anti_join(stop_words) %>%
   count(word, sort = TRUE)
 ```
+
+```{r}
+library(gutenbergr)
+```
+
+```{r}
+grimm_tales <- gutenberg_download(2591)
+grimm_tales
+```
+
+```{r}
+grimm_tales %>%
+  unnest_tokens(word, text) %>%
+  anti_join(stop_words) %>%
+  count(word, sort = TRUE)
+```
+
+```{r}
+counts <- grimm_tales %>%
+  unnest_tokens(word, text) %>%
+  anti_join(stop_words) %>%
+  count(word, sort = TRUE) %>%
+  filter(n > 100)
+
+counts
+```
+
+```{r}
+counts <- counts %>% mutate(word = reorder(word, n))
+```
+
+```{r}
+counts %>% ggplot(aes(n, word)) + geom_col() + labs(y=NULL)
+```
