@@ -1,0 +1,41 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(tidytext)
+```
+
+```{r}
+text = c("To be, or not to be--that is the question:",
+         "Whether 'tis nobler in the mind to suffer",
+         "The slings and arrows of outrageous fortune",
+         "Or to take arms against a sea of troubles",
+         "And by opposing end them.")
+
+text <- tibble(line=1:5, text=text)
+text
+```
+
+```{r}
+tokens <- text %>% unnest_tokens(word, text)
+tokens
+```
+
+```{r}
+tokens %>% count(word, sort = TRUE)
+```
+
+```{r}
+lines <- readLines("https://chryswoods.com/text_analysis_r/hamlet.txt")
+lines
+```
+
+```{r}
+hamlet <- tibble(line=1:length(lines), text=lines)
+hamlet_tokens <- hamlet %>% unnest_tokens(word, text)
+hamlet_tokens %>% count(word, sort = TRUE)
+```
+
