@@ -179,31 +179,49 @@ grimm_tales_blocks %>% ggplot(aes(block, joy)) + geom_col()
 ```
 
 ```{r}
-
+library(wordcloud)
 ```
 
 ```{r}
-
+grimm_tales_count <- grimm_tales %>% count(word, sort = TRUE)
 ```
 
 ```{r}
-
+wordcloud(grimm_tales_count$word, grimm_tales_count$n, 
+          min.freq = 25, max.words = 50, random.order = FALSE)
 ```
 
 ```{r}
-
+grimm_tales_count %>% with(wordcloud(word, n, 
+          min.freq = 25, max.words = 50, random.order = FALSE))
 ```
 
 ```{r}
-
+grimm_tales_count %>% with(wordcloud(word, n, 
+          min.freq = 25, max.words = 50, random.order = FALSE,
+          colors=brewer.pal(8, "Dark2")))
+```
+```{r}
+grimm_tales_sentiments <- grimm_tales %>% 
+                         inner_join(sentiments) %>% 
+                         count(word, sentiment, sort=TRUE) %>% 
+                         pivot_wider(names_from=sentiment, 
+                                     values_from=n, 
+                                     values_fill=0)
 ```
 
 ```{r}
-
+grimm_tales_sentiments %>% with(wordcloud(word, joy, 
+                                       min.freq=10,
+                                       random.color = FALSE,
+                                       colors = brewer.pal(8, "PuOr")))
 ```
 
 ```{r}
-
+grimm_tales_sentiments %>% with(wordcloud(word, fear, 
+                                       min.freq=10,
+                                       random.color = FALSE,
+                                       colors = brewer.pal(12, "Paired")))
 ```
 
 ```{r}
