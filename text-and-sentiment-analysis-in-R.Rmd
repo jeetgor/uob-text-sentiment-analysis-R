@@ -445,7 +445,32 @@ ggraph(trigram_graph, layout = "fr") +
 ```
 
 ```{r}
+# Define the soliloquy
+hamlet_soliloquy <- "
+To be, or not to be, that is the question:
+Whether 'tis nobler in the mind to suffer
+The slings and arrows of outrageous fortune,
+Or to take Arms against a Sea of troubles,
+And by opposing end them: to die, to sleep
+No more; and by a sleep, to say we end
+The heartache, and the thousand natural shocks
+That Flesh is heir to? 'tis a consummation
+Devoutly to be wished. To die, to sleep,
+To sleep, perchance to Dream; aye, there's the rub,
+For in that sleep of death, what dreams may come,
+When we have shuffled off this mortal coil,
+Must give us pause..."
 
+# Convert the text to a tibble
+hamlet_tibble <- tibble(line = 1, text = hamlet_soliloquy)
+
+# Create bigrams
+hamlet_bigrams <- hamlet_tibble %>% 
+  unnest_tokens(bigram, text, token = "ngrams", n = 2)
+
+# Separate into individual words
+hamlet_bigrams <- hamlet_bigrams %>%
+  separate(bigram, c("word1", "word2"), sep = " ")
 ```
 
 ```{r}
