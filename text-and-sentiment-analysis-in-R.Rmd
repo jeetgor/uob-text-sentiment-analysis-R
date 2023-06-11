@@ -482,14 +482,57 @@ bigram_graph <- bigram_counts %>%
   graph_from_data_frame()
 
 # Plot the graph
+# Plot the graph
 ggraph(bigram_graph, layout = "fr") +
-  geom_edge_link() +
-  geom_node_point() +
-  geom_node_text(aes(label = name), vjust = 1, hjust = 1) +
-  theme_void()
+     geom_edge_link(aes(edge_alpha = n), show.legend = FALSE,
+                    arrow = grid::arrow(type = "closed", length = unit(2, "mm")), 
+                    end_cap = circle(1, "mm")) +
+     geom_node_point(color = "lightblue", size = 2) +
+     geom_node_text(aes(label = name), size = 2) +
+     theme_void()
 ```
 
 ```{r}
 
+# Define the soliloquy
+hamlet_soliloquy <- "
+To be, or not to be, that is the question:
+Whether 'tis nobler in the mind to suffer
+The slings and arrows of outrageous fortune,
+Or to take Arms against a Sea of troubles,
+And by opposing end them: to die, to sleep
+No more; and by a sleep, to say we end
+The heartache, and the thousand natural shocks
+That Flesh is heir to? 'tis a consummation
+Devoutly to be wished. To die, to sleep,
+To sleep, perchance to Dream; aye, there's the rub,
+For in that sleep of death, what dreams may come,
+When we have shuffled off this mortal coil,
+Must give us pause..."
 
+# Convert the text to a tibble
+hamlet_tibble <- tibble(line = 1, text = hamlet_soliloquy)
+
+# Create trigrams
+hamlet_trigrams <- hamlet_tibble %>% 
+  unnest_tokens(trigram, text, token = "ngrams", n = 3)
+
+# Separate into individual words
+hamlet_trigrams <- hamlet_trigrams %>%
+  separate(trigram, c("word1", "word2", "word3"), sep = " ")
+
+# Count the trigrams
+trigram_counts <- hamlet_trigrams %>% count(word1, word2, word3, sort=TRUE)
+
+# Generate the graph
+trigram_graph <- trigram_counts %>% graph_from_data_frame()
+
+# Plot the graph
+ggraph(trigram_graph, layout = "fr") +
+  geom_edge_link(aes(edge_alpha = n), show.legend = FALSE,
+                 arrow = grid::arrow(type = "closed", length = unit(2, "mm")), 
+                 end_cap = circle(1, "mm")) +
+  geom_node_point(color = "lightblue", size = 2) +
+  geom_node_text(aes(label = name), size = 2) +
+  theme_void()
 ```
